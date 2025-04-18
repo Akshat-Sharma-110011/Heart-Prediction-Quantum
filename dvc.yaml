@@ -27,6 +27,10 @@ stages:
     deps:
       - artifacts/processed
       - src/Model_Training.py
+    params:
+      - Model_Training.n_estimators
+      - Model_Training.max_depth
+      - Model_Training.random_state
     outs:
       - models/model.pkl
 
