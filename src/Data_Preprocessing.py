@@ -2,6 +2,7 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import os
 import logging
+import joblib
 
 log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
@@ -42,6 +43,9 @@ def preprocess_df(df: pd.DataFrame, target_column = 'HeartDisease', binary_colum
         df_processed = pd.concat([X_final, y], axis = 1)
 
         logger.debug('Preprocessing Data ends....')
+
+        scaler_path = os.path.join('models', 'scaler.pkl')
+        joblib.dump(scaler, scaler_path)
         return df_processed
     except Exception as e:
         logger.error('Unexpected error: {}'.format(e))

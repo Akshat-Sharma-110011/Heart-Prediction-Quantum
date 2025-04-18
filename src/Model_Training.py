@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import logging
 import yaml
+import joblib
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -109,7 +110,10 @@ def main():
 
         # Split features and target
         X_train = train_data.drop(columns=target_col)
-        y_train = train_data[target_col]
+        y_train = train_data[target_col]# Create directory
+        os.makedirs('features', exist_ok=True)
+        joblib.dump(X_train.columns.tolist(), 'features/model_features.pkl')
+
 
         # Train and save model
         model = train_model(X_train, y_train, params)
