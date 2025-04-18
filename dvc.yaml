@@ -2,42 +2,49 @@ stages:
   Data_Ingestion:
     cmd: python src/Data_Ingestion.py
     deps:
-      - src/Data_Ingestion.py
+    - src/Data_Ingestion.py
     outs:
-      - artifacts/raw
+    - artifacts/raw
 
   Data_Preprocessing:
     cmd: python src/Data_Preprocessing.py
     deps:
-      - artifacts/raw
-      - src/Data_Preprocessing.py
+    - artifacts/raw
+    - src/Data_Preprocessing.py
     outs:
-      - artifacts/interim
+    - artifacts/interim
 
   Feature_Engineering:
     cmd: python src/Feature_Engineering.py
     deps:
-      - artifacts/interim
-      - src/Feature_Engineering.py
+    - artifacts/interim
+    - src/Feature_Engineering.py
     outs:
-      - artifacts/processed
+    - artifacts/processed
 
   Model_Training:
     cmd: python src/Model_Training.py
     deps:
-      - artifacts/processed
-      - src/Model_Training.py
+    - artifacts/processed
+    - src/Model_Training.py
     params:
-      - Model_Training.n_estimators
-      - Model_Training.max_depth
-      - Model_Training.random_state
+    - Model_Training.n_estimators
+    - Model_Training.max_depth
+    - Model_Training.random_state
     outs:
-      - models/model.pkl
+    - models/model.pkl
 
   Model_Evaluation:
     cmd: python src/Model_Evaluation.py
     deps:
-      - models/model.pkl
-      - src/Model_Evaluation.py
+    - models/model.pkl
+    - src/Model_Evaluation.py
     metrics:
-      - reports/metrics.json
+    - reports/metrics.json
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step

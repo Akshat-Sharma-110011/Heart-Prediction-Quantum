@@ -8,6 +8,8 @@ import numpy as np
 import logging
 import pickle
 import json
+import yaml
+from dvclive import Live
 
 log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
@@ -91,8 +93,26 @@ def save_metrics(metrics_dict: dict, file_path: str) -> None:
         logger.error('Unexpected error while saving metrics: {}'.format(e))
         raise
 
+def load_params(params_path: str) -> dict:
+    """Load model parameters from a YAML file."""
+    try:
+        with open(params_path, 'r') as f:
+            params = yaml.safe_load(f)
+            logger.debug(f'Parameters loaded from {params_path}')
+        return params
+    except FileNotFoundError as e:
+        logger.error(f'Parameter file not found: {e}')
+        raise
+    except yaml.YAMLError as e:
+        logger.error(f'YAML parsing error: {e}')
+        raise
+    except Exception as e:
+        logger.error(f'Unexpected error loading parameters: {e}')
+        raise
+
 def main():
     try:
+        params = load_params('params.yaml')
         clf = load_model('./models/model.pkl')
         test_data = load_data('./artifacts/processed/test_engineered.csv')
 
@@ -100,6 +120,15 @@ def main():
         y_test = test_data['HeartDisease']
 
         metrics_dict = evaluate_model(clf, X_test, y_test)
+
+        with Live(save_dvc_exp= True) as live:
+            live.log_metric('Accuracy', accuracy_score(y_test, clf.predict(X_test)))
+            live.log_metric('Precision', precision_score(y_test, clf.predict(X_test)))
+            live.log_metric('Recall', recall_score(y_test, clf.predict(X_test)))
+            live.log_metric('F1', f1_score(y_test, clf.predict(X_test)))
+
+            live.log_params(params)
+
         save_metrics(metrics_dict, 'reports/metrics.json')
     except Exception as e:
         logger.error('Unexpected error while evaluating model: {}'.format(e))
