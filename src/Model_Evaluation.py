@@ -12,7 +12,7 @@ import json
 log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
 
-logger = logging.getLogger('Feature Engineering')
+logger = logging.getLogger('Model Evaluation')
 logger.setLevel(logging.DEBUG)
 
 # Avoid adding duplicate handlers
@@ -20,7 +20,7 @@ if not logger.hasHandlers():
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.DEBUG)
 
-    log_file_path = os.path.join(log_dir, 'Feature_Engineering.log')
+    log_file_path = os.path.join(log_dir, 'Model_Evaluation.log')
     file_handler = logging.FileHandler(log_file_path)
     file_handler.setLevel(logging.DEBUG)
 
